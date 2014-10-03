@@ -1,9 +1,11 @@
 import pickle
 import subprocess
 import threading
+import os
 
 NUMBER_OF_THREADS = 16
 URL = "https://bitbucket.org/"
+CLONE_DIR = "clones/"
 
 def clone(start, step, repo_list):
     # For every repo available to this thread
@@ -13,11 +15,18 @@ def clone(start, step, repo_list):
         # Get repo's username/name pair
         fullname = repo_list[i][1]
         if vct == 'hg':
-            subprocess.check_output(['hg', 'clone', '-U', URL + fullname])
+            try:
+                subprocess.check_output(['hg', 'clone', '-U', URL + fullname, fullname.replace("/", "~")])
+            except subprocess.CalledProcessError as ex:
+                print ex.output
         else:
-            subprocess.check_output(['git', 'clone', '--mirror', URL + fullname])
+            try:
+                subprocess.check_output(['git', 'clone', '--mirror', URL + fullname, fullname.replace("/", "~")])
+            except subprocess.CalledProcessError as ex:
+                print ex.output
 
-repo_list = pickle.load(open('team5_repos', 'r'))
+os.chdir("clones")
+repo_list = pickle.load(open('../team5_repos', 'r'))
 threads = []
 for thread_number in range(NUMBER_OF_THREADS):
     step = len(repo_list) / NUMBER_OF_THREADS
