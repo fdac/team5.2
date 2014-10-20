@@ -1,0 +1,21 @@
+#!/usr/bin/expect
+set timeout -1
+spawn time python clone.py
+expect {           
+  "Username for 'https://bitbucket.org':" {
+      send "\r"
+      exp_continue
+  } 
+  "Password for 'https://bitbucket.org':" {
+      send "\r"
+      exp_continue
+  }
+  "user:" {
+      send "\004"
+      exp_continue
+  }
+  "password:" {
+      send "\004"
+      exp_continue
+  }
+}
